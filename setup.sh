@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
 
+# Silence pushd/popd
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+popd () {
+    command popd > /dev/null
+}
+
+# Get Script Directory
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+pushd "$DIR" || exit
+
 echo "Checking for oh-my-zsh install"
 if [[ -d "$HOME/.oh-my-zsh" ]]; then
   echo "Oh My Zsh already installed"
@@ -7,20 +20,22 @@ else
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 fi
 
+echo "Setting theme to agnoster (don't forget to change to a powerline font in terminal preferences)"
+sed -i '' 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' $HOME/.zshrc
+
+if [[ -d "fonts" ]]; then
+  pushd fonts || exit
+  git pull
+else
+  git clone https://github.com/powerline/fonts.git --depth=1
+  pushd fonts || exit
+fi
+
+echo "Installing powerline fonts"
+./install.sh
+popd || exit
+
 echo "Symlinking dotfiles to home directory"
-
-# Silence pushd/popd
-pushd () {
-    command pushd "$@" > /dev/null
-}
-
-popd () {
-    command popd "$@" > /dev/null
-}
-
-# Get Script Directory
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-pushd $DIR
 
 # Ignore . & .. during file glob
 GLOBIGNORE=.
@@ -50,15 +65,15 @@ for f in $FILES; do
 
   if [[ -f $f_dest ]]; then
     echo "$f_dest already exists, replacing"
-    rm $f_dest
+    rm "$f_dest"
   fi
 
   if [[ -L $f_dest ]]; then
     echo "$f_dest is already a symlink, replacing with new symlink"
-    rm $f_dest
+    rm "$f_dest"
   fi
 
-  ln -s $f_source $f_dest
+  ln -s "$f_source" "$f_dest"
 done
 
-popd
+popd || exit
