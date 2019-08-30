@@ -20,8 +20,16 @@ else
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 fi
 
+cp "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc"
+
 echo "Setting theme to agnoster (don't forget to change to a powerline font in terminal preferences)"
 sed -i '' 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/g' $HOME/.zshrc
+sed -i '' 's/plugins=(git)/plugins=(brew compleat git npm osx yarn)/g' $HOME/.zshrc
+sed -i '' 's/# HIST_STAMPS/HIST_STAMPS/g' $HOME/.zshrc
+sed -i '' 's/# DISABLE_UNTRACKED_FILES_DIRTY/DISABLE_UNTRACKED_FILES_DIRTY/g' $HOME/.zshrc
+sed -i '' 's/# COMPLETION_WAITING_DOTS/COMPLETION_WAITING_DOTS/g' $HOME/.zshrc
+sed -i '' 's/# DISABLE_UPDATE_PROMPT/DISABLE_UPDATE_PROMPT/g' $HOME/.zshrc
+
 
 if [[ -d "fonts" ]]; then
   pushd fonts || exit
