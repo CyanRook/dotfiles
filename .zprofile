@@ -7,6 +7,9 @@ setopt PUSHDSILENT
 # Alias mk to popd
 alias mk='popd'
 
+# Alias brewup
+alias brewup='brew update && brew upgrade && brew cask upgrade && brew cleanup && brew doctor'
+
 function resource_zsh {
   if [[ ! -v ZDOTDIR ]]; then
     ZDOTDIR=$HOME
